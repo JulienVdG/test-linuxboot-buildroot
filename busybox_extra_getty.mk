@@ -12,7 +12,8 @@ VGA_GETTY_OPTIONS =
 IPMI_GETTY_PORT = ttyS1
 IPMI_GETTY_BAUDRATE = 0
 IPMI_GETTY_TERM = vt100
-IPMI_GETTY_OPTIONS = 
+# escape the \ as used in sed bellow
+IPMI_GETTY_OPTIONS = -I "\\033c\\033[2J"
 
 # The code
 
