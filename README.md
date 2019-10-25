@@ -5,7 +5,9 @@ It should be cloned with the buildroot folder as git submodule (ie use recursive
 
 ## Test
 
-TODO go tests with tastevin ;)
+``
+./test.sh
+``
 
 ## Building
 
@@ -21,11 +23,9 @@ Else see [requirements](https://buildroot.org/downloads/manual/manual.html#requi
 ### Build
 ```
 make
-```
 
-The images will be in `output/images`
- - `disk.img` can be dd'ed to an usbstick
- - `bzImage` and `rootfs.cpio.xz` can be used for tftp
+make PROJECT_NAME=grub
+```
 
 ## (buildroot-submodule) Licence
 
