@@ -3,25 +3,43 @@
 This project holds several buildroot configurations to test bootloaders
 It should be cloned with the buildroot folder as git submodule (ie use recursive)
 
+It currently covers:
+ - grub
+ - linuxboot u-root 'boot' command on a grub installed partition
+
 ## Test
 
-``
+```shell
 ./test.sh
-``
+```
 
 ## Building
 
 ### Requirements
 
+#### buildroot
+
 On debian
-```
+```shell
 sudo apt install build-essential bc
 ```
 
 Else see [requirements](https://buildroot.org/downloads/manual/manual.html#requirement).
 
-### Build
+#### u-root
+
+Make sure your Go version is 1.12. Make sure your `GOPATH` is set up correctly.
+
+Download and install u-root:
+
+```shell
+go get github.com/u-root/u-root
 ```
+
+
+### Build
+
+```shell
 make
 
 make PROJECT_NAME=grub
