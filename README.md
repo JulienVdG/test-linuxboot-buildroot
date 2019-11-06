@@ -5,7 +5,8 @@ It should be cloned with the buildroot folder as git submodule (ie use recursive
 
 It currently covers:
  - grub
- - linuxboot u-root 'boot' command on a grub installed partition
+ - linuxboot u-root 'boot', 'boot2' and 'localboot' commands on a grub
+   installed partition
 
 ## Test
 
