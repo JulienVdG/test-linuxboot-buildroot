@@ -39,14 +39,14 @@ var BuildrootBatcher []expect.Batcher = []expect.Batcher{
 	},
 }
 
-func TestBootGrub(t *testing.T) {
-	vm, err := qemu.NewVM("",
-		"-hda", "grub/output/images/disk.img")
+func qemuTest(t *testing.T, extraArgs ...string) (*expect.GExpect, func()) {
+	vm, err := qemu.NewVM("", extraArgs...)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	opts, warn := testsuite.ExpectOptions("")
+	// Use test name as log filename
+	opts, warn := testsuite.ExpectOptions(t.Name())
 	if warn != nil {
 		t.Log(warn)
 	}
@@ -55,10 +55,29 @@ func TestBootGrub(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Spawn failed: %v", err)
 	}
+
 	err = vm.PowerUp()
 	if err != nil {
 		t.Error(err)
 	}
+
+	return e, func() {
+		err = vm.PowerDown()
+		if err != nil {
+			t.Error(err)
+		}
+
+		err = vm.Close()
+		if err != nil {
+			t.Error(err)
+		}
+	}
+}
+
+func TestBootGrub(t *testing.T) {
+	e, cleanup := qemuTest(t,
+		"-hda", "grub/output/images/disk.img")
+	defer cleanup()
 
 	batcher := append([]expect.Batcher{
 		&testsuite.BExpTLog{
@@ -71,41 +90,15 @@ func TestBootGrub(t *testing.T) {
 		t.Errorf("booting trough grub: %v", testsuite.DescribeBatcherErr(batcher, res, err))
 
 	}
-
-	err = vm.PowerDown()
-	if err != nil {
-		t.Error(err)
-	}
-
-	err = vm.Close()
-	if err != nil {
-		t.Error(err)
-	}
 }
 
 func TestURootBootGrub(t *testing.T) {
-	vm, err := qemu.NewVM("",
+	e, cleanup := qemuTest(t,
 		"-kernel", "output/images/bzImage",
 		"-initrd", "output/images/uroot.cpio",
 		"-append", "console=ttyS0",
 		"-hda", "grub/output/images/disk.img")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	opts, warn := testsuite.ExpectOptions("")
-	if warn != nil {
-		t.Log(warn)
-	}
-
-	e, _, err := vm.Spawn(1*time.Second, opts...)
-	if err != nil {
-		t.Fatalf("Spawn failed: %v", err)
-	}
-	err = vm.PowerUp()
-	if err != nil {
-		t.Error(err)
-	}
+	defer cleanup()
 
 	batcher := append(testsuite.Linuxboot2urootBatcher,
 		[]expect.Batcher{
@@ -121,15 +114,5 @@ func TestURootBootGrub(t *testing.T) {
 	if err != nil {
 		t.Errorf("u-root 'boot' grub config: %v", testsuite.DescribeBatcherErr(batcher, res, err))
 
-	}
-
-	err = vm.PowerDown()
-	if err != nil {
-		t.Error(err)
-	}
-
-	err = vm.Close()
-	if err != nil {
-		t.Error(err)
 	}
 }
