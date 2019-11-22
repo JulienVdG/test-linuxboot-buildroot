@@ -5,8 +5,10 @@ It should be cloned with the buildroot folder as git submodule (ie use recursive
 
 It currently covers:
  - grub
+ - syslinux on cd aka isolinux
  - linuxboot u-root 'boot', 'boot2' and 'localboot' commands on a grub
    installed partition
+ - linuxboot u-root 'boot', 'boot2' and 'localboot' commands on an isolinux cd
 
 ## Test
 
@@ -44,6 +46,7 @@ go get github.com/u-root/u-root
 make
 
 make PROJECT_NAME=grub
+make PROJECT_NAME=syslinux
 ```
 
 ## (buildroot-submodule) Licence
