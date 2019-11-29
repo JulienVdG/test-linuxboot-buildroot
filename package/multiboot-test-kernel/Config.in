@@ -1,0 +1,9 @@
+config BR2_PACKAGE_MULTIBOOT_TEST_KERNEL
+        bool "multiboot-test-kernel"
+        help
+          A multiboot test kernel.
+          The kernel writes received Multiboot information to a serial
+	  output in JSON format and computes sha256 sum for each loaded
+	  module.
+
+          https://github.com/u-root/multiboot-test-kernel
