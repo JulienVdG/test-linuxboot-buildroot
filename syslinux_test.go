@@ -73,6 +73,7 @@ func TestURootBoot2Isolinux(t *testing.T) {
 }
 
 func TestURootLocalbootIsolinux(t *testing.T) {
+	t.Skip("Feature not implemented")
 	e, cleanup := qemuTest(t,
 		"-kernel", "output/images/bzImage",
 		"-initrd", "output/images/uroot.cpio",

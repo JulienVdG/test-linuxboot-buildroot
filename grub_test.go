@@ -156,5 +156,30 @@ func TestBootGrubMultiboot(t *testing.T) {
 	}
 }
 
+func TestURootBootGrubMultiboot(t *testing.T) {
+	t.Skip("Feature not implemented") // and test not finished
+	e, cleanup := qemuTest(t,
+		"-kernel", "output/images/bzImage",
+		"-initrd", "output/images/uroot.cpio",
+		"-append", "console=ttyS0",
+		"-hda", "grub/output/images/disk.img")
+	defer cleanup()
+
+	batcher := append(testsuite.Linuxboot2urootBatcher,
+		[]expect.Batcher{
+			&expect.BSnd{S: "boot -boot=multiboot-test-kernel\r\n"},
+			&testsuite.BExpTLog{
+				L: "kexec done",
+				R: "kexec_core: Starting new kernel",
+				T: 10,
+			}}...)
+	batcher = append(batcher, BuildrootBatcher...)
+
+	res, err := e.ExpectBatch(batcher, 0)
+	if err != nil {
+		t.Errorf("u-root 'boot' grub config: %v", testsuite.DescribeBatcherErr(batcher, res, err))
+	}
+}
+
 // printed by test or error, use as golden
 var wantGrubMultiboot []byte = []byte("\n{\n\"flags\": 6767,\n\"mem_lower\": 639, \"mem_upper\": 1047424,\n\"boot_device\": 2147549183,\n\"cmdline\": \"\",\n\"mods_count\": 2, \"mods_addr\": 65692,\n\"modules\": [\n{\"start\": 1052672, \"end\": 1057988, \"cmdline\": \"foo=bar\", \"sha256\": \"7e28d3515e28dda2d9db617a10bf1843b8673a366fdd32eec3bfb5e6fe30b273\"},\n{\"start\": 1060864, \"end\": 6156848, \"cmdline\": \"\", \"sha256\": \"26c13d10d7038e70979206f3175d86bfaba3e23fc9617e6570116b796fc5cd6f\"}\n],\n\"multiboot_elf_sec\": {\"num\": 6, \"size\": 40, \"addr\": 65880, \"shndx\": 5},\n\"mmap_addr\": 65736, \"mmap_length\": 144,\n\"mmap\": [\n{\"size\": 20, \"base_addr\": \"0x000000000\", \"length\": \"0x00009fc00\", \"type\": 1},\n{\"size\": 20, \"base_addr\": \"0x00009fc00\", \"length\": \"0x000000400\", \"type\": 2},\n{\"size\": 20, \"base_addr\": \"0x0000f0000\", \"length\": \"0x000010000\", \"type\": 2},\n{\"size\": 20, \"base_addr\": \"0x000100000\", \"length\": \"0x03fee0000\", \"type\": 1},\n{\"size\": 20, \"base_addr\": \"0x03ffe0000\", \"length\": \"0x000020000\", \"type\": 2},\n{\"size\": 20, \"base_addr\": \"0x0fffc0000\", \"length\": \"0x000040000\", \"type\": 2}\n],\n\"bootloader\": \"GRUB 2.02\",\n\"status\": \"ok\"\n}")
